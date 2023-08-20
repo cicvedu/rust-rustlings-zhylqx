@@ -40,12 +40,27 @@ impl Default for Person {
 // If while parsing the age, something goes wrong, then return the default of
 // Person Otherwise, then return an instantiated Person object with the results
 
-// I AM NOT DONE
 
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
+        match s.split_once(',') {
+            Some((first, second)) => {
+                if first.is_empty() {
+                    Person::default()
+                } else if let Ok(a) = second.parse::<usize>() {
+                    Person {
+                        name: first.into(),
+                        age: a,
+                    }
+                } else {
+                    Person::default()
+                }
+            },
+            _ => Person::default(),
+        }
     }
 }
+
 
 fn main() {
     // Use the `from` function
@@ -82,8 +97,7 @@ mod tests {
     }
     #[test]
     fn test_bad_age() {
-        // Test that "Mark,twenty" will return the default person due to an
-        // error in parsing age
+        // Test that "Mark,twenty" will return the default person due to an error in parsing age
         let p = Person::from("Mark,twenty");
         assert_eq!(p.name, "John");
         assert_eq!(p.age, 30);
